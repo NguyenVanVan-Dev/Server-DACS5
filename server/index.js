@@ -6,8 +6,6 @@ const cors = require('cors')
 // const morgan = require('morgan');
 const path = require("path")
 require('dotenv').config();
-
-const port = process.env.POST || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -26,6 +24,8 @@ app.get("*", (req, res) => {
 });
 //routes 
 route(app);
-app.listen(port, () => {
-  console.log(`Ecommerce Blockchain app listening on port ${port}`)
-})
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Ecommerce Blockchain app is running on port ${ PORT }`);
+});
