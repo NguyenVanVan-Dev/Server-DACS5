@@ -19,9 +19,9 @@ db.connect("ecommerce-blockchain");
 
 app.use(express.static(path.join(__dirname,'public')));
 
-app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname,"public/build", "index.html"));
-});
+// app.get("*", (req, res) => {
+//     res.sendFile(path.join(__dirname,"public/build", "index.html"));
+// });
 //routes 
 route(app);
 
