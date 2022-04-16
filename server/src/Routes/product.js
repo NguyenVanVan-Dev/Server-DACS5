@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const productController = require('../app/Controllers/ProductController');
-const authMiddleware = require('../app/Middleware/Authtization');
-const Uploadfile = require('../app/Middleware/Uploadfile');
+const productController = require('../App/Controllers/ProductController');
+const authMiddleware = require('../App/Middleware/Authtization');
+const Uploadfile = require('../App/Middleware/Uploadfile');
 
 router.post('/store',authMiddleware,async (req,res, next)=>{
     Uploadfile('image')(req, res, function (err) {

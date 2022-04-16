@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const contractController = require('../app/Controllers/ContractController');
-const authMiddleware = require('../app/Middleware/Authtization')
+const contractController = require('../App/Controllers/ContractController');
+const authMiddleware = require('../App/Middleware/Authtization')
 router.post('/store',authMiddleware,contractController.store);
 router.get('/show',authMiddleware,contractController.show);
 // router.get('/detail',authMiddleware,categoryController.detail);
