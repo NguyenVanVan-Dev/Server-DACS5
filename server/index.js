@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const db = require('./src/app/config');
+const db = require('./src/app/config/index');
 const route = require('./src/Routes');
 const cors = require('cors')
 const morgan = require('morgan');
