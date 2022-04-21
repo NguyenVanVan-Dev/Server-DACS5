@@ -12,7 +12,7 @@ function route(app){
     app.use('/product', productRouter);
     app.use('/category', categoryRouter);
     app.use('/contract', contractRouter);
-
+    app.use('/checkout', checkoutRouter)
     app.use('/', siteRouter);
     
 }
