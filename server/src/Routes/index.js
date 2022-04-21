@@ -4,7 +4,7 @@ const productRouter = require('./product');
 const authRouter = require('./auth');
 const siteRouter = require('./site');
 const contractRouter = require('./contract');
-
+const checkoutRouter = require('./checkout');
 
 function route(app){
 
