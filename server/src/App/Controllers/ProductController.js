@@ -160,12 +160,15 @@ class ProductController {
             .then((result)=>{
                 if(result){
                     const unlinkAsync = promisify(fs.unlink);
-                    unlinkAsync(`public\\uploads\\${result.image}`);
+                    let checkPathFileOld = fs.existsSync(`public\\uploads\\${result.image}`);
+                    if(checkPathFileOld) 
+                    {
+                        unlinkAsync(`public\\uploads\\${result.image}`);
+                    } 
                     res.status(200).json({success:true});
                 }else{
                     throw {message:"Delete Product Failure , Infomation not found"};
-                }
-               
+                } 
             });
         } catch (error) {
             res.status(500).json({success:false,message: error.message})
