@@ -3,7 +3,7 @@ const app = express();
 const db = require('./src/App/Config/index');
 const route = require('./src/Routes');
 const cors = require('cors')
-const morgan = require('morgan');
+// const morgan = require('morgan');
 const path = require("path")
 require('dotenv').config();
 app.use(cors());
@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // app.use(express.static('public')); 
 // morgan debug log server 
-app.use(morgan('combined'))
+// app.use(morgan('combined'))
 
 //Connect Database 
 // db.connect("ecom-block-v2");
