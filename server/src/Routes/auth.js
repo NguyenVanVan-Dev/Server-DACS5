@@ -10,5 +10,6 @@ router.put('/admin/forgot-password',authController.forgotPassword);
 router.put('/admin/reset-password',authController.resetPassword);
 router.post('/user/login',authController.loginUser);
 router.post('/user/register',authController.registerUser);
+router.post('/employee/register',authController.registerEmployee);
 
 module.exports = router;

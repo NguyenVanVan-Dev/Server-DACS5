@@ -1,4 +1,7 @@
-
+const { DefenderRelayProvider } = require('defender-relay-client/lib/web3');
+const Web3 = require('web3');
+require('dotenv').config();
+const abi = require("../../../ABI.json");
 class SiteController {
 
     async index( req,res) {
@@ -21,6 +24,18 @@ class SiteController {
             info7:"Cảm ơn vì đã ghé thăm đồ án của mình <3",
         }
         res.status(200).json({data});
+    }
+    async testRelay(req,res) {
+        const credentials = { apiKey: process.env.REPLAY_API , apiSecret: process.env.REPLAY_SECRET_KEY };
+        const provider = new DefenderRelayProvider(credentials, { speed: 'fast' });
+        const web3 = new Web3(provider);
+        const [from] = await web3.eth.getAccounts();
+        const OganiManager = new web3.eth.Contract(abi, "0x9ED09DA23dB437ebc515E05CE40661c5A6b7E371", { from });
+        const tx = await OganiManager.methods.userPaymentOrder("ecommerce-blockchian-0901").send({
+            value:web3.utils.toWei("0.01", "ether")
+        });
+        
+        res.status(200).json({message: "Success!",tx});
     }
 }
 module.exports = new SiteController;

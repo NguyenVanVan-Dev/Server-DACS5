@@ -11,13 +11,6 @@ class CheckoutController {
         const cartItems = JSON.parse(cart);
         await newOrder.save()
                 .then((result)=>{
-                    for (let i = 0; i < cartItems.length; i++) {
-                        let orderItem = cartItems[i];
-                        let prepareOrderItem =  new OrderItems({orderID: result._id,productID:orderItem._id,qty: orderItem.quantity,price:orderItem.price})
-                        prepareOrderItem.save().then((data)=>{
-                            
-                        });
-                    }
                     res.status(200).json({success:true,message:"Add Order Successfully ",orderID:result._id});
                 })
                 .catch((error)=>{
@@ -36,15 +29,37 @@ class CheckoutController {
                     };
                     res.status(400).json({success:false,message:"Add Product Failure!",listError});
                 });
+                for (let i = 0; i < cartItems.length; i++) {
+                    let orderItem = cartItems[i];
+                    let prepareOrderItem =  new OrderItems({orderID: newOrder._id,productID:orderItem._id,qty: orderItem.quantity,price:orderItem.price})
+                    prepareOrderItem.save().then((data)=>{
+                        Order.findOne({_id:newOrder._id}, (err, order) => {
+                            if (order) {
+                                order.listItemOrder.push(data);
+                                order.save();
+                            }
+                        });
+                    });
+                }
                 return false;
     }
-
+    //[GET] /checkout/order-placed
+    async get(req,res) {
+        let orders = await Order.find({email: "van@gmail.com"})
+        .populate("listItemOrder")
+        .populate({
+            path:"listItemOrder",
+            populate:{path: 'productID'}
+        })
+        if(orders){
+            res.status(200).json({success:true,orders});
+        }
+    }
     async populateData(req,res){
-        let products = {} ;
-        products = await OrderItems.find()
+        let products =  await OrderItems.find({email:"van666@gmail.com"})
         .populate('orderID')
         .populate('productID')
-        .sort({ createdAt: 1 }).limit(3);
+        .sort({ createdAt: 1 });
         if(products){
             res.status(200).json({success:true,products});
         }

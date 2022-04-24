@@ -1,5 +1,5 @@
 const User = require('../Models/Users');
-// const Token = require('../Models/Token');
+const Token = require('../Models/Token');
 const argon2 = require('argon2');
 var jwt = require('jsonwebtoken');
 const sendMailOgani = require('../Middleware/SendMail');
@@ -240,6 +240,11 @@ class AuthController {
             console.log(error.message)
             res.status(500).json({success:false,message:"Internal Server Error"})
         }
+    }
+    //[POST]  
+    //path /register  
+    async registerEmployee(req,res) {
+        
     }
     
 }
