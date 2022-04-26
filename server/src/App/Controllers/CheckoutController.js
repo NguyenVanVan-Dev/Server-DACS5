@@ -3,7 +3,7 @@ const Order = require('../Models/Order');
 const OrderItems = require('../Models/OrderItem');
 
 class CheckoutController {
-
+    //[POST] /checkout/store
     async store(req,res){
         let listError = {};
         const { firstName,lastName,streetAddress,apartmentAddress,city,country,sdt,email, notes, cart, totalETH,totalVND} = req.body;
@@ -45,20 +45,25 @@ class CheckoutController {
     }
     //[GET] /checkout/order-placed
     async get(req,res) {
-        let orders = await Order.find({email: "van@gmail.com"})
+        const { email } = req.query
+        let orders = await Order.find({email})
+        if(orders){
+            res.status(200).json({success:true,orders});
+        }
+    }
+    //[GET] /checkout/order-detail
+    async detail(req,res) {
+        const { id } = req.query
+        let listItem =  await OrderItems.find({orderID:id}).populate('productID')
+        res.status(200).json({success: true, listItem}) 
+    }
+    async populateData(req,res){
+        let products =  await OrderItems.find({email:"van666@gmail.com"})
         .populate("listItemOrder")
         .populate({
             path:"listItemOrder",
             populate:{path: 'productID'}
         })
-        if(orders){
-            res.status(200).json({success:true,orders});
-        }
-    }
-    async populateData(req,res){
-        let products =  await OrderItems.find({email:"van666@gmail.com"})
-        .populate('orderID')
-        .populate('productID')
         .sort({ createdAt: 1 });
         if(products){
             res.status(200).json({success:true,products});
