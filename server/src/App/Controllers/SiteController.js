@@ -1,7 +1,7 @@
 const { DefenderRelayProvider } = require('defender-relay-client/lib/web3');
 const Web3 = require('web3');
 require('dotenv').config();
-const abi = require("../../../ABI.json");
+const abi = require("../../../ABI.json"); //address Ropsten network Etherscan 0x9ED09DA23dB437ebc515E05CE40661c5A6b7E371 
 class SiteController {
 
     async index( req,res) {

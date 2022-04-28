@@ -1,4 +1,8 @@
-
+const { DefenderRelayProvider } = require('defender-relay-client/lib/web3');
+const Web3 = require('web3');
+require('dotenv').config();
+const abi = require("../../../ABI.json"); // address Ropsten Ethscan 0x9ED09DA23dB437ebc515E05CE40661c5A6b7E371
+const OganiABI_V2 = require("../../../OganiABI_V2.json"); // address Ropsten Ethscan 0x237Fc62f28a9b28Fc9c33baC7fC6c9424E143f9C
 const Order = require('../Models/Order');
 const OrderItems = require('../Models/OrderItem');
 
@@ -56,6 +60,37 @@ class CheckoutController {
         const { id } = req.query
         let listItem =  await OrderItems.find({orderID:id}).populate('productID')
         res.status(200).json({success: true, listItem}) 
+    }
+    async delete(req, res) {
+        const { id, wallet} = req.body
+        await Order.findOne({_id:id})
+        .then((data) => {
+            this.refundsMoneyOrder(wallet, data.totalETH)
+            .then((data) => console.log(data))
+            .catch(() => res.status(403).json({success:false, message:"You not is a Manager"}));
+        })
+        .catch((error) =>  {
+            res.status(400).json({success:false});
+        })
+        // await Order.deleteOne({_id:id})
+        // .then((data) => {
+        //     console.log(data);
+        //     res.status(200).json({success: true})
+        // }).catch((error) => {
+        //     console.log(error);
+        //     res.status(500).json({success: false})  
+        // });
+           
+    }
+    async refundsMoneyOrder(addressReceve, amount) {
+        
+        const credentials = { apiKey: process.env.REPLAY_API , apiSecret: process.env.REPLAY_SECRET_KEY };
+        const provider = new DefenderRelayProvider(credentials, { speed: 'fast' });
+        const web3 = new Web3(provider);
+        const amountETH =  web3.utils.toWei(amount.toString(), "ether");
+        const [from] = await web3.eth.getAccounts();
+        const OganiManager = new web3.eth.Contract(OganiABI_V2, "0x4bE6Da0e943adc8397B923A3562a0bfDf850909A",{ from });
+        return await OganiManager.methods.refundsOrderUser(addressReceve.toString(), amountETH).send();
     }
     async populateData(req,res){
         let products =  await OrderItems.find({email:"van666@gmail.com"})
