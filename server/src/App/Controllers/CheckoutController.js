@@ -63,21 +63,14 @@ class CheckoutController {
         const { id, wallet} = req.body
         await Order.findOne({_id:id})
         .then((data) => {
-            this.refundsMoneyOrder(wallet, data.totalETH)
-            .then((data) => console.log(data))
-            .catch(() => res.status(403).json({success:false, message:"You not is a Manager"}));
+            this.refundsMoneyOrder(wallet, data.totalETH) 
         })
+        .then((data) =>  Order.deleteOne({_id:id}))
+        .then((data) => { res.status(200).json({success: true})})
         .catch((error) =>  {
-            res.status(400).json({success:false});
-        })
-        // await Order.deleteOne({_id:id})
-        // .then((data) => {
-        //     console.log(data);
-        //     res.status(200).json({success: true})
-        // }).catch((error) => {
-        //     console.log(error);
-        //     res.status(500).json({success: false})  
-        // });
+            console.log(error)
+            res.status(400).json({success:false,error: error});
+        });
            
     }
     async refundsMoneyOrder(addressReceve, amount) {
