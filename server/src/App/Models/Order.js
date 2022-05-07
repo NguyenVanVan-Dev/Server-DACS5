@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 const orderSchema = new Schema({
     name: { 
         type: String, 
-        required:[true , 'Please enter your firstName!' ]
+        required:[true , 'Please enter your Name!' ]
     }, 
     streetAddress:{
         type:String,
@@ -21,7 +21,7 @@ const orderSchema = new Schema({
         type:String,
         required:[true , 'Please enter your country!' ]
     },
-    sdt:{
+    phone:{
         type:String,
         required:[true , 'Please enter your phone!' ]
     },
