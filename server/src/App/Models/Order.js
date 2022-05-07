@@ -1,14 +1,10 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const orderSchema = new Schema({
-    firstName: { 
+    name: { 
         type: String, 
         required:[true , 'Please enter your firstName!' ]
     }, 
-    lastName:{
-        type: String,
-        required:[true , 'Please enter your lastName!' ]
-    },
     streetAddress:{
         type:String,
         required:[true , 'Please enter your street Address!' ]

@@ -10,9 +10,8 @@ class CheckoutController {
     //[POST] /checkout/store
     async store(req,res){
         let listError = {};
-        const { firstName,lastName,streetAddress,apartmentAddress,city,country,sdt,email, notes, cart, totalETH,totalVND} = req.body;
-        const newOrder  = new Order({firstName,lastName,streetAddress,apartmentAddress,city,country,sdt,email, notes, totalETH,totalVND});
-        const cartItems = JSON.parse(cart);
+        const newOrder  = new Order(req.body);
+        const cartItems = JSON.parse(req.body.cart);
         await newOrder.save()
                 .then((result)=>{
                     res.status(200).json({success:true,message:"Add Order Successfully ",orderID:result._id});
@@ -20,8 +19,7 @@ class CheckoutController {
                 .catch((error)=>{
                     listError = {
                         ...listError,
-                        firstName:error.errors.firstName ? error.errors.firstName.message : '',
-                        lastName:error.errors.lastName ? error.errors.lastName.message : '',
+                        name:error.errors.name ? error.errors.name.message : '',
                         streetAddress:error.errors.streetAddress ? error.errors.streetAddress.message  : '',
                         apartmentAddress:error.errors.apartmentAddress ? error.errors.apartmentAddress.message  : '',
                         city:error.errors.city ? error.errors.city.message  : '',
