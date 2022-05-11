@@ -10,8 +10,8 @@ class SiteController {
             desc: " Đây là phần server của đồ án này mình sử dụng NodeJS Express để xây dựng ra nó",
             api:" Sau đây là 1 số API mình đùng để trả dữ liệu cho Client",
             dataUrl: {
-                "All product show in client": "https://ecommerce-blockchian-0901.herokuapp.com/product/show",
-                "All category show in client":"https://ecommerce-blockchian-0901.herokuapp.com/category/show",
+                "All product show in client": "https://ecom-block.herokuapp.com/product/show",
+                "All category show in client":"https://ecom-block.herokuapp.com/category/show",
                 "Other Api" : " Mình có sử dụng Authorization nên còn một số APi phải đăng nhập mới có thể sử dụng"
             },
             info:"bạn có thể truy cập vào trang admin thông quan URL : http://ecommerce-blockchian-19it290.surge.sh/admin/login or nhấn vào biểu tượng market tại home page (topbar) ",
