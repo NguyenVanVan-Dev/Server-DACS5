@@ -46,6 +46,10 @@ const orderSchema = new Schema({
         type:Number,
         required:[true , 'Please enter your total ETH!' ]
     },
+    status:{
+        type:Number,
+        default: 0
+    },
     listItemOrder:[{ type: Schema.Types.ObjectId, ref: 'order_item' }],
 },{
     timestamps:true

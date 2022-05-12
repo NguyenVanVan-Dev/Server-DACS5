@@ -65,7 +65,7 @@ class CheckoutController {
         .then((data) => {
             this.refundsMoneyOrder(wallet, data.totalETH) 
         })
-        .then((data) =>  Order.deleteOne({_id:id}))
+        .then((data) => Order.deleteOne({_id:id}))
         .then((data) => { res.status(200).json({success: true})})
         .catch((error) =>  {
             console.log(error)
@@ -83,7 +83,7 @@ class CheckoutController {
         return await OganiManager.methods.refundsOrderUser(addressReceve.toString(), amountETH).send();
     }
     async populateData(req,res){
-        let products =  await OrderItems.find({email:"van666@gmail.com"})
+        let products =  await Order.find({email:"vancute69@gmail.com"})
         .populate("listItemOrder")
         .populate({
             path:"listItemOrder",
