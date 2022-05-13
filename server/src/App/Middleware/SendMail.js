@@ -9,7 +9,7 @@ SendMailOgani = async (accountTo,Content) => {
         secure: true,
         auth: {
             user: 'nguyenvanvanbh1991@gmail.com',
-            pass: '',
+            pass: process.env.PASSWORD_EMAIL,
         },
     });
     let info = await transporter.sendMail({

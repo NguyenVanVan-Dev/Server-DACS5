@@ -1,11 +1,12 @@
 const { DefenderRelayProvider } = require('defender-relay-client/lib/web3');
 const Web3 = require('web3');
 require('dotenv').config();
+const SendMailOgani = require('../Middleware/SendMail');
 const abi = require("../../../ABI.json"); // address Ropsten Ethscan 0x9ED09DA23dB437ebc515E05CE40661c5A6b7E371
 const OganiABI_V2 = require("../../../OganiABI_V2.json"); // address Ropsten Ethscan 0x4bE6Da0e943adc8397B923A3562a0bfDf850909A
 const Order = require('../Models/Order');
 const OrderItems = require('../Models/OrderItem');
-
+const addressContract = "0x4bE6Da0e943adc8397B923A3562a0bfDf850909A";
 class CheckoutController {
     //[POST] /checkout/store
     async store(req,res){
@@ -63,7 +64,11 @@ class CheckoutController {
         const { id, wallet} = req.body
         await Order.findOne({_id:id})
         .then((data) => {
-            this.refundsMoneyOrder(wallet, data.totalETH) 
+            this.refundsMoneyOrder(wallet, data.totalETH).then((data) => {
+                var bodyEmail = `<a href="https://ropsten.etherscan.io/tx/${data.transactionHash}">Your order has been canceled, Please click here to view transaction history!</a>`;
+                SendMailOgani('nvvan.0901.developer@gmail.com',bodyEmail);
+                console.log(data);
+            }); 
         })
         .then((data) => Order.deleteOne({_id:id}))
         .then((data) => { res.status(200).json({success: true})})
@@ -79,7 +84,7 @@ class CheckoutController {
         const web3 = new Web3(provider);
         const amountETH =  web3.utils.toWei(amount.toString(), "ether");
         const [from] = await web3.eth.getAccounts();
-        const OganiManager = new web3.eth.Contract(OganiABI_V2, "0x4bE6Da0e943adc8397B923A3562a0bfDf850909A",{ from });
+        const OganiManager = new web3.eth.Contract(OganiABI_V2,addressContract,{ from });
         return await OganiManager.methods.refundsOrderUser(addressReceve.toString(), amountETH).send();
     }
     async populateData(req,res){

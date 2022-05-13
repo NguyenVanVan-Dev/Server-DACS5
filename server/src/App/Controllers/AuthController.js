@@ -30,8 +30,8 @@ class AuthController {
              await  registerAdmin.save()
             .then((message)=>{
                 const {_id,email,name,phone} = message;
-                const accessToken = jwt.sign({userId: registerAdmin._id}, process.env.ACCESS_TOKEN_SECRET,{ expiresIn: '3h'});
-                const refeshToken = jwt.sign({userId: registerAdmin._id},process.env.REFESH_TOKEN_SECRET);
+                const accessToken = jwt.sign({userId: registerAdmin._id, isAdmin: true}, process.env.ACCESS_TOKEN_SECRET,{ expiresIn: '3h'});
+                const refeshToken = jwt.sign({userId: registerAdmin._id, isAdmin: true},process.env.REFESH_TOKEN_SECRET);
                 res.status(200).json({success:true,message:"Register Successfully ",accessToken,refeshToken,info:{id:_id,name,email,phone}});
             })
             .catch((error)=>{
@@ -61,8 +61,8 @@ class AuthController {
                 return res.status(400).json({success:false, message:"Incorret Email or Password!"})
             }
     
-            const accessToken = jwt.sign({userId: user._id},process.env.ACCESS_TOKEN_SECRET,{ expiresIn: '3h'});
-            const refeshToken = jwt.sign({userId: user._id},process.env.REFESH_TOKEN_SECRET);
+            const accessToken = jwt.sign({userId: user._id, isAdmin: true},process.env.ACCESS_TOKEN_SECRET,{ expiresIn: '3h'});
+            const refeshToken = jwt.sign({userId: user._id, isAdmin: true},process.env.REFESH_TOKEN_SECRET);
             const token = new Token({refeshToken: refeshToken});
             await token.save()
             .then((data)=>{
@@ -111,8 +111,8 @@ class AuthController {
     //path /admin/loginGoogle
     async loginGoogle(req,res){
         const {id} = req.body;
-        const accessToken = jwt.sign({userId:id},process.env.ACCESS_TOKEN_SECRET,{ expiresIn: '3h'});
-        const refeshToken = jwt.sign({userId:id},process.env.REFESH_TOKEN_SECRET);
+        const accessToken = jwt.sign({userId:id, isAdmin: true},process.env.ACCESS_TOKEN_SECRET,{ expiresIn: '3h'});
+        const refeshToken = jwt.sign({userId:id, isAdmin: true},process.env.REFESH_TOKEN_SECRET);
         res.json({
                 success:true,
                 message:"Login Successfully ",

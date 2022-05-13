@@ -33,7 +33,7 @@ const productSchema = new Schema({
     category_id:{
         type: String,
         ref: 'category',
-        default: 1,
+        required:[true,'Please select category for Product!']
     },
     image:{
         type:String,
