@@ -44,7 +44,7 @@ const productSchema = new Schema({
         default:1
     },
     sale_of:{
-        type:Number,
+        type: Number,
         default: 0
     },
     wallet:{

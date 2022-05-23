@@ -10,6 +10,9 @@ class ProductController {
         let listError = {};
         try {
             req.body.image = req.file ? req.file.filename : '';
+            if(req.body.sale_of === '') {
+                req.body.sale_of = 0;
+            }
             const productSave  = new productModle(req.body);
             await productSave.save()
             .then((result)=>{
@@ -108,43 +111,40 @@ class ProductController {
     //[PUT] /product/update
     async update(req,res){
         let listError = {};
-        try {
-            const {image} = req.body;
-            req.body.image = req.file ? req.file.filename : image; 
-            const unlinkAsync = promisify(fs.unlink);
-            const opts = { runValidators: true };
-            let update = { $set: req.body };
-            await productModle.updateOne({_id:req.body.id},update,opts)
-            .then((result)=>{
-                let checkPathFileOld = fs.existsSync(`public\\uploads\\${image}`);
-                console.log(checkPathFileOld);
-                if(req.file && checkPathFileOld) 
-                { 
-                    unlinkAsync(`public\\uploads\\${image}`);
-                } 
-                res.status(200).json({success:true,message:"Update Product Successfully "});
-            })
-            .catch((error)=>{
-                if(req.file) 
-                {  
-                    unlinkAsync(req.file.path);
-                } 
-                listError = {
-                    ...listError,
-                    name:error.errors.name ? error.errors.name.message : '',
-                    keyword:error.errors.keyword ? error.errors.keyword.message : '',
-                    desc:error.errors.desc ? error.errors.desc.message  : '',
-                    slug:error.errors.slug ? error.errors.slug.message  : '',
-                    price:error.errors.price ? error.errors.price.message  : '',
-                    qty:error.errors.qty ? error.errors.qty.message  : '',
-                    image:error.errors.image ? error.errors.image.message  : '',
-                };
-                res.status(400).json({success:false,message:"Add Product Failure!",listError});
-            });
-        } catch (error) {
-            console.log("server error:---",error);
-            res.status(500).json({success:false,message:"Internal Server Error"})
-        }
+        const {image} = req.body;
+        req.body.image = req.file ? req.file.filename : image; 
+        const unlinkAsync = promisify(fs.unlink);
+        const opts = { runValidators: true };
+        let update = { $set: req.body };
+        console.log(req.body);
+        await productModle.updateOne({_id:req.body.id},update,opts)
+        .then((result)=>{
+            console.log(result)
+            let checkPathFileOld = fs.existsSync(`public\\uploads\\${image}`);
+            console.log(checkPathFileOld);
+            if(req.file && checkPathFileOld) 
+            { 
+                unlinkAsync(`public\\uploads\\${image}`);
+            } 
+            res.status(200).json({success:true,message:"Update Product Successfully "});
+        })
+        .catch((error)=>{
+            if(req.file) 
+            {  
+                unlinkAsync(req.file.path);
+            } 
+            listError = {
+                ...listError,
+                name:error.errors.name ? error.errors.name.message : '',
+                keyword:error.errors.keyword ? error.errors.keyword.message : '',
+                desc:error.errors.desc ? error.errors.desc.message  : '',
+                slug:error.errors.slug ? error.errors.slug.message  : '',
+                price:error.errors.price ? error.errors.price.message  : '',
+                qty:error.errors.qty ? error.errors.qty.message  : '',
+                image:error.errors.image ? error.errors.image.message  : '',
+            };
+            res.status(400).json({success:false,message:"Add Product Failure!",listError});
+        });
     }
     //[DELETE] /product/delete 
     async delete(req,res){
