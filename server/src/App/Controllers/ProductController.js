@@ -41,71 +41,56 @@ class ProductController {
     }
      //[GET] /product/show
     async show(req,res){
-        const authorizationHeader = req.headers['authorization'];
         const {type,category_id,product_id,page,limit} = req.query;
         let pagination = {} ;
         let products = {} ; 
         let totalRows= 0;
         let listOne;
         let listTwo;
-        if(authorizationHeader)
-        {
-            let  token = authorizationHeader.split(' ')[1];
-            jwt.verify(token,process.env.ACCESS_TOKEN_SECRET, (error,data) => {
-                if(error) {
-                    res.status(403).json({success:false,message:"Please go back to the previous page , you do not have permission to access this link!"});
+        switch (type) {
+            case 'featured':
+                products = await productModle.find({type_display: 1 , display: 1}).populate('category_id').sort({ createdAt: -1 }).limit(12);
+                break;
+            case 'latest':
+                listOne = await productModle.find({type_display: 2 , display: 1}).sort({ createdAt: -1 }).limit(3);
+                listTwo = await productModle.find({type_display: 2 , display: 1}).sort({ createdAt: -1 }).skip(3).limit(3);
+                products = {
+                    listOne,
+                    listTwo
                 }
-                else if(data && data.isAdmin) {
-                    products = productModle.find().populate('category_id').sort({ createdAt: -1 });
+                break;
+            case 'top-rated':
+                listOne = await productModle.find({type_display: 3 , display: 1}).sort({ createdAt: -1 }).limit(3);
+                listTwo = await productModle.find({type_display: 3 , display: 1}).sort({ createdAt: -1 }).skip(3).limit(3);
+                products = {
+                    listOne,
+                    listTwo
                 }
-            })
+                break;    
+            case 'related-product':
+                products = await productModle.find({ display: 1, category_id:category_id, _id: { "$ne": product_id }}).sort({ createdAt: -1 }).limit(8);
+                break; 
+            case 'sale-of':
+                products = await productModle.find({ display: 1, sale_of:{$gt:0}}).sort({ createdAt: -1 }).limit(8);
+                break; 
+            case 'normal':
+                products = await productModle.find({display: 1, sale_of: 0 }).sort({ createdAt: -1 }).skip((page-1)*limit).limit(limit);
+                totalRows = await productModle.find({display: 1, sale_of: 0 });
+                pagination ={
+                    page,
+                    limit,
+                    totalRows: totalRows.length
+                }
+                break; 
+            case 'admin': 
+                products = await productModle.find().populate('category_id').sort({ createdAt: -1 });
+                break;
+            default:
+                products = await productModle.find({display: 1}).sort({ createdAt: -1 });
+                break;
         }
-        try {
-            switch (type) {
-                case 'featured':
-                    products = await productModle.find({type_display: 1 , display: 1}).populate('category_id').sort({ createdAt: -1 }).limit(12);
-                    break;
-                case 'latest':
-                    listOne = await productModle.find({type_display: 2 , display: 1}).sort({ createdAt: -1 }).limit(3);
-                    listTwo = await productModle.find({type_display: 2 , display: 1}).sort({ createdAt: -1 }).skip(3).limit(3);
-                    products = {
-                        listOne,
-                        listTwo
-                    }
-                    break;
-                case 'top-rated':
-                    listOne = await productModle.find({type_display: 3 , display: 1}).sort({ createdAt: -1 }).limit(3);
-                    listTwo = await productModle.find({type_display: 3 , display: 1}).sort({ createdAt: -1 }).skip(3).limit(3);
-                    products = {
-                        listOne,
-                        listTwo
-                    }
-                    break;    
-                case 'related-product':
-                    products = await productModle.find({ display: 1, category_id:category_id, _id: { "$ne": product_id }}).sort({ createdAt: -1 }).limit(8);
-                    break; 
-                case 'sale-of':
-                    products = await productModle.find({ display: 1, sale_of:{$gt:0}}).sort({ createdAt: -1 }).limit(8);
-                    break; 
-                case 'normal':
-                    products = await productModle.find({display: 1, sale_of: 0 }).sort({ createdAt: -1 }).skip((page-1)*limit).limit(limit);
-                    totalRows = await productModle.find({display: 1, sale_of: 0 });
-                    pagination ={
-                        page,
-                        limit,
-                        totalRows: totalRows.length
-                    }
-                    console.log(typeof page);
-                    break; 
-                default:
-                    products = await productModle.find({display: 1}).sort({ createdAt: -1 });
-                    break;
-            }
-            if(products){
-                res.status(200).json({success:true,products,pagination});
-            }
-        } catch (error) {
-            res.status(500).json({success:false,error});
+        if(products){
+            res.status(200).json({success:true,products,pagination});
         }
     }
     //[GET] /product/detail?id=...

@@ -1,5 +1,6 @@
 const User = require('../Models/Users');
 const Token = require('../Models/Token');
+const Employee = require('../Models/Employee');
 const argon2 = require('argon2');
 var jwt = require('jsonwebtoken');
 const sendMailOgani = require('../Middleware/SendMail');
@@ -244,7 +245,28 @@ class AuthController {
     //[POST]  
     //path /register  
     async registerEmployee(req,res) {
-        
+        const employee = await Employee.findOne({ email:req.body.email });
+        let listError = {};
+        if(employee){
+            listError ={
+                email:"Email account already in use, please choose another account!"
+            }
+            return res.status(400).json({success:false, message:"Add Employee Failure!",listError})
+        } 
+        const registerEmployee  = new Employee(req.body);
+        await  registerEmployee.save()
+            .then((message)=>{
+                res.status(200).json({success:true,message:"Add Employee Successfully "});
+            })
+            .catch((error)=>{
+                console.log(error)
+                listError = {
+                    name:  error.errors.name ? error.errors.name.message : '',
+                    email: error.errors.email ? error.errors.email.message : '',
+                    wallet: error.errors.wallet ? error.errors.phone.message : '',
+                };
+                res.status(403).json({success:false,message:"Add Employee Failure!",listError});
+            });
     }
     
 }

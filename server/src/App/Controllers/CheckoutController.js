@@ -64,17 +64,17 @@ class CheckoutController {
         const { id, wallet} = req.body
         await Order.findOne({_id:id})
         .then((data) => {
-            this.refundsMoneyOrder(wallet, data.totalETH).then((data) => {
-                var bodyEmail = `<a href="https://ropsten.etherscan.io/tx/${data.transactionHash}">Your order has been canceled, Please click here to view transaction history!</a>`;
+            return  this.refundsMoneyOrder(wallet, data.totalETH).then((result) => {
+                var bodyEmail = `<a href="https://ropsten.etherscan.io/tx/${result.transactionHash}">Your order has been canceled, Please click here to view transaction history!</a>`;
                 SendMailOgani('nvvan.0901.developer@gmail.com',bodyEmail);
-                console.log(data);
+                console.log(result);
             }); 
         })
         .then((data) => Order.deleteOne({_id:id}))
         .then((data) => { res.status(200).json({success: true})})
         .catch((error) =>  {
-            console.log(error)
-            res.status(400).json({success:false,error: error});
+            console.log(error.message);
+            res.status(400).json({success:false,error: error.message});
         });
            
     }
