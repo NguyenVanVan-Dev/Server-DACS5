@@ -6,6 +6,7 @@ const abi = require("../../../ABI.json"); // address Ropsten Ethscan 0x9ED09DA23
 const OganiABI_V2 = require("../../../OganiABI_V2.json"); // address Ropsten Ethscan 0x4bE6Da0e943adc8397B923A3562a0bfDf850909A
 const Order = require('../Models/Order');
 const OrderItems = require('../Models/OrderItem');
+const Product = require('../Models/Product');
 const addressContract = "0x4bE6Da0e943adc8397B923A3562a0bfDf850909A";
 class CheckoutController {
     //[POST] /checkout/store
@@ -15,6 +16,27 @@ class CheckoutController {
         const cartItems = JSON.parse(req.body.cart);
         await newOrder.save()
                 .then((result)=>{
+                    for (let i = 0; i < cartItems.length; i++) {
+                        let orderItem = cartItems[i];
+                        Product.find({_id: orderItem._id}, (error, data) => {
+                            if(error) {
+                                res.status(400).json({success:false,message:"Add Order Failure "});
+                                return false;
+                            } else if (data) {
+                                data[0].qty = data[0].qty - orderItem.quantity;
+                                data[0].save();
+                            }
+                        }) 
+                        let prepareOrderItem =  new OrderItems({orderID: newOrder._id,productID:orderItem._id,qty: orderItem.quantity,price:orderItem.price})
+                        prepareOrderItem.save().then((data)=>{
+                            Order.findOne({_id:newOrder._id}, (err, order) => {
+                                if (order) {
+                                    order.listItemOrder.push(data);
+                                    order.save();
+                                }
+                            });
+                        });
+                    }
                     res.status(200).json({success:true,message:"Add Order Successfully ",orderID:result._id});
                 })
                 .catch((error)=>{
@@ -32,18 +54,7 @@ class CheckoutController {
                     };
                     res.status(400).json({success:false,message:"Add Product Failure!",listError});
                 });
-                for (let i = 0; i < cartItems.length; i++) {
-                    let orderItem = cartItems[i];
-                    let prepareOrderItem =  new OrderItems({orderID: newOrder._id,productID:orderItem._id,qty: orderItem.quantity,price:orderItem.price})
-                    prepareOrderItem.save().then((data)=>{
-                        Order.findOne({_id:newOrder._id}, (err, order) => {
-                            if (order) {
-                                order.listItemOrder.push(data);
-                                order.save();
-                            }
-                        });
-                    });
-                }
+            
                 return false;
     }
     //[GET] /checkout/order-placed

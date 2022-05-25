@@ -10,7 +10,7 @@ class ProductController {
         let listError = {};
         try {
             req.body.image = req.file ? req.file.filename : '';
-            if(req.body.sale_of === '') {
+            if(req.body.sale_of === '' || req.body.sale_of === null) {
                 req.body.sale_of = 0;
             }
             const productSave  = new productModle(req.body);
@@ -69,7 +69,15 @@ class ProductController {
                     listOne,
                     listTwo
                 }
-                break;    
+                break;   
+            case 'review':
+                listOne = await productModle.find({type_display: 4 , display: 1}).sort({ createdAt: -1 }).limit(3);
+                listTwo = await productModle.find({type_display: 4 , display: 1}).sort({ createdAt: -1 }).skip(3).limit(3);
+                products = {
+                    listOne,
+                    listTwo
+                }
+                break;  
             case 'related-product':
                 products = await productModle.find({ display: 1, category_id:category_id, _id: { "$ne": product_id }}).sort({ createdAt: -1 }).limit(8);
                 break; 
@@ -115,13 +123,14 @@ class ProductController {
         req.body.image = req.file ? req.file.filename : image; 
         const unlinkAsync = promisify(fs.unlink);
         const opts = { runValidators: true };
+        if(req.body.sale_of === '' || req.body.sale_of === 'null') {
+            req.body.sale_of = 0;
+        }
+        console.log(req.body)
         let update = { $set: req.body };
-        console.log(req.body);
         await productModle.updateOne({_id:req.body.id},update,opts)
         .then((result)=>{
-            console.log(result)
             let checkPathFileOld = fs.existsSync(`public\\uploads\\${image}`);
-            console.log(checkPathFileOld);
             if(req.file && checkPathFileOld) 
             { 
                 unlinkAsync(`public\\uploads\\${image}`);
@@ -129,19 +138,21 @@ class ProductController {
             res.status(200).json({success:true,message:"Update Product Successfully "});
         })
         .catch((error)=>{
+            console.log(error);
             if(req.file) 
             {  
                 unlinkAsync(req.file.path);
             } 
             listError = {
                 ...listError,
-                name:error.errors.name ? error.errors.name.message : '',
-                keyword:error.errors.keyword ? error.errors.keyword.message : '',
-                desc:error.errors.desc ? error.errors.desc.message  : '',
-                slug:error.errors.slug ? error.errors.slug.message  : '',
-                price:error.errors.price ? error.errors.price.message  : '',
-                qty:error.errors.qty ? error.errors.qty.message  : '',
-                image:error.errors.image ? error.errors.image.message  : '',
+                name:error.errors?.name ? error.errors.name.message : '',
+                keyword:error.errors?.keyword ? error.errors.keyword.message : '',
+                desc:error.errors?.desc ? error.errors.desc.message  : '',
+                review:error.errors?.review ? error.errors.review.message  : '',
+                slug:error.errors?.slug ? error.errors.slug.message  : '',
+                price:error.errors?.price ? error.errors.price.message  : '',
+                qty:error.errors?.qty ? error.errors.qty.message  : '',
+                image:error.errors?.image ? error.errors.image.message  : '',
             };
             res.status(400).json({success:false,message:"Add Product Failure!",listError});
         });

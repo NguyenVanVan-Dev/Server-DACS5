@@ -10,6 +10,10 @@ const productSchema = new Schema({
         max:255,
         required:[true , 'Please enter your desciption!' ]
     },
+    review:{
+        type: String,
+        required:[true , 'Please enter your keyword!' ]
+    },
     keyword:{
         type:String,
         required:[true , 'Please enter your keyword!' ]
