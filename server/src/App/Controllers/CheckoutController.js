@@ -98,7 +98,7 @@ class CheckoutController {
         const OganiManager = new web3.eth.Contract(OganiABI_V2,addressContract,{ from });
         return await OganiManager.methods.refundsOrderUser(addressReceve.toString(), amountETH).send();
     }
-    async populateData(req,res){
+    async populateData(req,res) {
         let products =  await Order.find({email:"vancute69@gmail.com"})
         .populate("listItemOrder")
         .populate({

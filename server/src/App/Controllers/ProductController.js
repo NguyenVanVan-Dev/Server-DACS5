@@ -52,7 +52,7 @@ class ProductController {
         let listTwo;
         switch (type) {
             case 'featured':
-                products = await productModle.find({type_display: 1 , display: 1}).populate('category_id').sort({ createdAt: -1 }).limit(12);
+                products = await productModle.find({type_display: 1 , display: 1}).populate('category_id').sort({ createdAt: -1 }).limit(20);
                 break;
             case 'latest':
                 listOne = await productModle.find({type_display: 2 , display: 1}).sort({ createdAt: -1 }).limit(3);

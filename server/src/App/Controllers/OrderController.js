@@ -9,7 +9,7 @@ class OrderController {
             path:"listItemOrder",
             populate:{path: 'productID'}
         })
-        .sort({ createdAt: 1 })
+        .sort({ createdAt: -1 })
         .then((orders) => {
             res.status(200).json({success:true,orders})
         })
@@ -34,6 +34,18 @@ class OrderController {
         .catch((err) => {
             res.status(500).json({success: false, message: err.message});
         });
+    }
+    async update(req,res) {
+        let update = { $set: req.body };
+        await Order.updateOne({_id:req.body.id},update)
+        .then((data) => {
+            console.log(data);
+            res.status(200).json({success:true});
+        })
+        .catch((error)=> {
+            console.log(error);
+            res.status(400).json({success:false,message: error.message});
+        })
     }
     
 }
