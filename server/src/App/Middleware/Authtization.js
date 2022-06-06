@@ -13,8 +13,11 @@ authMiddleware = (req,res,next) => {
         res.status(401).json({success:false,message:'UnAuthorization Error'})
     }
     jwt.verify(token,process.env.ACCESS_TOKEN_SECRET, (error,data)=>{
-        if(error) res.status(403).json({success:false,message:"Please go back to the previous page , you do not have permission to access this link!"});
-        next();
+        if(error) {
+            res.status(403).json({success:false,message:"Please go back to the previous page , you do not have permission to access this link!"});
+        } else {
+            next();
+        }
     })
 }
 

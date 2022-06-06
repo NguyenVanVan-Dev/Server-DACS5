@@ -75,9 +75,13 @@ class CheckoutController {
         const { id, wallet} = req.body
         await Order.findOne({_id:id})
         .then((data) => {
-            return  this.refundsMoneyOrder(wallet, data.totalETH).then((result) => {
+            console.log(data);
+            this.refundsMoneyOrder(wallet, data.totalETH)
+            .then((result) => {
                 var bodyEmail = `<a href="https://ropsten.etherscan.io/tx/${result.transactionHash}">Your order has been canceled, Please click here to view transaction history!</a>`;
-                SendMailOgani('nvvan.0901.developer@gmail.com',bodyEmail);
+                let subject = "Refunds for customer order";
+                let textContent = "We have returned the amount you ordered from our system. Thank you for always using our service. ";
+                SendMailOgani(data.email, bodyEmail, subject, textContent);
                 console.log(result);
             }); 
         })

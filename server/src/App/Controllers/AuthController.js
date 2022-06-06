@@ -112,7 +112,7 @@ class AuthController {
     //path /admin/loginGoogle
     async loginGoogle(req,res){
         const {id} = req.body;
-        const accessToken = jwt.sign({userId:id, isAdmin: true},process.env.ACCESS_TOKEN_SECRET,{ expiresIn: '3h'});
+        const accessToken = jwt.sign({userId:id, isAdmin: true},process.env.ACCESS_TOKEN_SECRET,{ expiresIn: '1m'});
         const refeshToken = jwt.sign({userId:id, isAdmin: true},process.env.REFESH_TOKEN_SECRET);
         res.json({
                 success:true,
@@ -202,7 +202,7 @@ class AuthController {
     //[POST]  
     //path /register  
     async registerUser(req,res){ 
-        const {name, password, email, phone, streetAddress, apartmentAddress, city, country} = req.body;
+        const {password, email} = req.body;
         const user = await User.findOne({ email })
         let listError = {};
         try {
@@ -213,21 +213,13 @@ class AuthController {
                 return res.status(400).json({success:false, message:"Register Failure!",listError})
             } 
             const hashPassword  = await argon2.hash(password);
-            const registerUser  = new User({ 
-                name: name,
-                phone:phone,
-                email:email,
-                password:hashPassword,
-                streetAddress:streetAddress,
-                apartmentAddress:apartmentAddress,
-                city:city,
-                country:country,
-            });
+            const registerUser  = new User({...req.body,password:hashPassword});
             await  registerUser.save()
-            .then((message)=>{
+            .then((data)=>{
+                console.log(data)
                 const accessToken = jwt.sign({userId: registerUser._id}, process.env.ACCESS_TOKEN_SECRET,{ expiresIn: '3h'});
                 const refeshToken = jwt.sign({userId: registerUser._id},process.env.REFESH_TOKEN_SECRET);
-                res.status(200).json({success:true,message:"Register Successfully ",accessToken,refeshToken,info:registerUser});
+                res.status(200).json({success:true,message:"Register Successfully ",accessToken,refeshToken,info:{...req.body, password: ""}});
             })
             .catch((error)=>{
                 listError = {

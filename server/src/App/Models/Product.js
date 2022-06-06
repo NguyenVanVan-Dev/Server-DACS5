@@ -12,7 +12,7 @@ const productSchema = new Schema({
     },
     review:{
         type: String,
-        required:[true , 'Please enter your keyword!' ]
+        required:[true , 'Please enter your review!' ]
     },
     keyword:{
         type:String,

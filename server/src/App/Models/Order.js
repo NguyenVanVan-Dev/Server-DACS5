@@ -38,6 +38,11 @@ const orderSchema = new Schema({
         type:Number,
         default:1
     },
+    paidWallet:{
+        type:String,
+        max:255,
+        required:[true , 'Please enter your paid wallet!' ]
+    },
     totalVND:{
         type:Number,
         required:[true , 'Please enter your total VND!' ]
