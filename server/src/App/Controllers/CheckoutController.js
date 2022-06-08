@@ -72,17 +72,17 @@ class CheckoutController {
         res.status(200).json({success: true, listItem}) 
     }
     async delete(req, res) {
-        const { id, wallet} = req.body
+        const { id } = req.body
         await Order.findOne({_id:id})
         .then((data) => {
-            console.log(data);
-            this.refundsMoneyOrder(wallet, data.totalETH)
+            console.log(data); 
+            this.refundsMoneyOrder(data.paidWallet, data.totalETH)
             .then((result) => {
                 var bodyEmail = `<a href="https://ropsten.etherscan.io/tx/${result.transactionHash}">Your order has been canceled, Please click here to view transaction history!</a>`;
                 let subject = "Refunds for customer order";
                 let textContent = "We have returned the amount you ordered from our system. Thank you for always using our service. ";
-                SendMailOgani(data.email, bodyEmail, subject, textContent);
-                console.log(result);
+                 SendMailOgani(data.email, bodyEmail, subject, textContent);
+                console.log(result); 
             }); 
         })
         .then((data) => Order.deleteOne({_id:id}))
