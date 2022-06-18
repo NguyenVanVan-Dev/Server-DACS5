@@ -112,7 +112,7 @@ class AuthController {
     //path /admin/loginGoogle
     async loginGoogle(req,res){
         const {id} = req.body;
-        const accessToken = jwt.sign({userId:id, isAdmin: true},process.env.ACCESS_TOKEN_SECRET,{ expiresIn: '1m'});
+        const accessToken = jwt.sign({userId:id, isAdmin: true},process.env.ACCESS_TOKEN_SECRET,{ expiresIn: '3h'});
         const refeshToken = jwt.sign({userId:id, isAdmin: true},process.env.REFESH_TOKEN_SECRET);
         res.json({
                 success:true,
